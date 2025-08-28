@@ -1,9 +1,9 @@
-name: Build and Deploy
+name: Build Project
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ "main" ]   # 推送到 main 分支时触发
+  workflow_dispatch:        # 允许手动触发
 
 jobs:
   build:
@@ -14,28 +14,32 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. 设置 Node.js（18 或 20 都行，看你的项目要求）
+    # 2. 设置 Node.js（18 即可，也可以用 20）
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 18
         cache: 'pnpm'
 
-    # 3. 安装 pnpm 9
+    # 3. 安装 pnpm v9
     - name: Install pnpm
       uses: pnpm/action-setup@v4
       with:
         version: 9
 
-    # 4. 安装依赖
+    # 4. 确认 pnpm 已经装好
+    - name: Check pnpm version
+      run: pnpm -v
+
+    # 5. 安装依赖
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
 
-    # 5. 构建项目
+    # 6. 构建项目
     - name: Build project
       run: pnpm gen:runtime && pnpm gen:manifest && pnpm build
 
-    # 6. 上传构建产物 (out/)
+    # 7. 上传构建产物 (out/)
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
